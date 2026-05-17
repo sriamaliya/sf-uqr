@@ -53,7 +53,7 @@ at_vals <- c(
 
 
 tiff(
-  filename = "Sebaran_Spasial_PDRB.tiff",
+  filename = "Sebaran_Spasial_Y.tiff",
   width = 8,
   height = 6,
   units = "in",
@@ -62,11 +62,11 @@ tiff(
 )
 
 
-peta_pdrb <- spplot(
+peta_Y <- spplot(
   peta11, "Y",
   col.regions = color,
   at = at_vals,
-  main = "Sebaran Spasial PDRB",
+  main = "Sebaran Spasial Y",
   colorkey = list(
     space = "right",
     labels = list(
@@ -77,7 +77,7 @@ peta_pdrb <- spplot(
 )
 
 
-print(peta_pdrb)
+print(peta_Y)
 
 dev.off()
 ```
