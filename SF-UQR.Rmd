@@ -1,0 +1,130 @@
+
+
+```{r}
+#load package
+#Packages Yang Digunakan
+
+library(sf)        
+library(sp)        
+library(spdep)     
+library(openxlsx)  
+library(spmoran)   
+```
+```{r}
+Indo <- st_read("D:/Rpro/Tesis Spasial/peta_indonesia_filtered.shp")
+peta11 <- as(Indo, "Spatial")
+```
+
+```{r}
+#input file excel
+data = read.xlsx("D:/Rpro/Tugas Prak Spasial/data25.xlsx")
+head(data)
+```
+
+```{r}
+data[,2] = log(data[,2])
+data[,8] = log(data[,8])
+head(data)
+```
+
+
+
+```{r}
+longlats <- data[ ,c( "long", "lat" )] 
+longlat = as.matrix(longlats)
+class(longlat)
+```
+
+
+```{r}
+#menggunakan bobot jarak eksponensial alpha=1,5
+Y <- data$Y
+longlat <- as.matrix(data[, c("long", "lat")])
+dist_mat <- spDists(longlat, longlat = TRUE)
+m.djarak <- as.matrix(dist_mat)
+
+alpha=1.5
+W.e<-exp((-alpha)*m.djarak) 
+#dinormalisasi 
+diag(W.e)<-0 
+rtot<-rowSums(W.e,na.rm=TRUE) 
+W.e.sd<-W.e/rtot #row-normalized 
+rowSums(W.e.sd,na.rm=TRUE)
+W.ed1 = mat2listw(W.e.sd,style='W') 
+summary(W.ed1)
+```
+```{r}
+plot(peta11, col='gray', border='#DCDCDC', main ="Eksponensial dengan alpha=1.5")
+plot(W.ed1, longlat, col='red', lwd=1, add=TRUE)
+```
+
+
+```{r}
+#Uji Efek Dependensi Spasial
+#Regresi Linier
+
+#REGRESI
+
+reg.klasik = lm(Y~X1+X2+X3+X4+X5, data = data)
+summary(reg.klasik)
+```
+```{r}
+residuals_model <- residuals(reg.klasik)
+```
+```{r}
+# Menghitung Moran’s I untuk residual
+moran_res <- moran.test(residuals_model, W.ed1)
+# Menampilkan hasil
+print(moran_res)
+```
+```{r}
+# Uji robust spatial dependence
+RS <- lm.RStests(reg.klasik, W.ed1,test = "all")
+summary(RS)
+
+```
+
+```{r}
+bptest(reg.klasik)
+```
+
+```{r}
+#SF-UQR
+
+coords <- as.matrix(data[, c("long", "lat")])
+y <- data[, "Y"]
+x <- data[, c("X1", "X2", "X3", "X4", "X5")]
+djarak <- spDists(coords, longlat = TRUE)
+m.djarak <- as.matrix(djarak)
+alpha <- 1.5
+W.e <- exp(-alpha * m.djarak)
+diag(W.e) <- 0
+rtot <- rowSums(W.e, na.rm = TRUE)
+W.e.sd <- W.e / rtot
+W.ed1 <- mat2listw(W.e.sd, style = "W")
+meig <- meigen(cmat = W.e.sd)
+qr_res1  <- resf_qr( y = y, x = x, meig = meig, tau  = c(0.1, 0.25, 0.50, 0.75, 0.90), boot = T, iter = 1000)
+```
+
+```{r}
+qr_res1$e
+```
+```{r}
+qr_res1$B
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
