@@ -9,7 +9,6 @@ library(sp)
 library(spdep)     
 library(openxlsx)  
 library(spmoran)
-library(ggplot2)
 ```
 ```{r}
 Indo <- st_read("D:/Rpro/Tesis Spasial/peta_indonesia_filtered.shp")
@@ -28,6 +27,60 @@ data[,8] = log(data[,8])
 head(data)
 ```
 
+```{r}
+colfunc <- colorRampPalette(
+  c("#e8f1fa",  
+    "#c5ddf3",
+    "#9ac3eb",
+    "#6ba6e1",
+    "#3d87d6",
+    "#1c68c1",
+    "#084a9b",
+    "#002147") 
+)
+
+k <- 50
+color <- colfunc(k)
+
+peta11$Y <- as.numeric(as.character(data$Y))
+
+legend_breaks <- seq(5, 12, by = 1)
+
+at_vals <- c(
+  legend_breaks,
+  max(peta11$Y, na.rm = TRUE) + 0.01
+)
+
+
+tiff(
+  filename = "Sebaran_Spasial_PDRB.tiff",
+  width = 8,
+  height = 6,
+  units = "in",
+  res = 300,
+  compression = "lzw"
+)
+
+
+peta_pdrb <- spplot(
+  peta11, "Y",
+  col.regions = color,
+  at = at_vals,
+  main = "Sebaran Spasial PDRB",
+  colorkey = list(
+    space = "right",
+    labels = list(
+      at = legend_breaks,
+      labels = format(round(legend_breaks, 0), nsmall = 0)
+    )
+  )
+)
+
+
+print(peta_pdrb)
+
+dev.off()
+```
 
 
 ```{r}
