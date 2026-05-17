@@ -8,7 +8,8 @@ library(sf)
 library(sp)        
 library(spdep)     
 library(openxlsx)  
-library(spmoran)   
+library(spmoran)  
+library(caret)
 ```
 ```{r}
 Indo <- st_read("D:/Rpro/Tesis Spasial/peta_indonesia_filtered.shp")
