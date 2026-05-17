@@ -11,7 +11,7 @@ library(openxlsx)
 library(spmoran)
 ```
 ```{r}
-Indo <- st_read("D:/Rpro/Tesis Spasial/peta_indonesia_filtered.shp")
+Indo <- st_read("D:/Rpro/tugas Spasial/peta_indonesia_filtered.shp")
 peta11 <- as(Indo, "Spatial")
 ```
 
